@@ -10,18 +10,42 @@ class User(models.Model):
 	last_login_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
 
-class Category(models.Model):
+	def __unicode__(self):
+		return self.name
+
+class Genre(models.Model):
 	class Meta:
-		db_table = 'dimension'
+		db_table = 'genre'
+
+	DIMENSION_CHOICES = (
+		(NATURE, u''),
+		(CULTURE, u''),
+		(HISTORY, u''),
+		(TIME, u''),
+		(PLACE, u''),
+		(FIGURE, u''),
+		(PRICE, u''),
+	)
 
 	name = models.CharField(max_length=80)
+	dimension = models.CharField(max_length=80, choices=DIMENSION_CHOICES)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
 
-class Dimension(models.Model):
+class Category(models.Model):
 	class Meta:
-		db_table = 'dimension'
+		db_table = 'category'
+
+	name = models.CharField(max_length=80)
+	genre = models.CharField(max_length=80)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class Keyword(models.Model):
+	class Meta:
+		db_table = 'keyword'
 
 	keyword = models.CharField(max_length=80)
 	weight = models.DecimalField(max_digits=20, decimal_places=3)
@@ -29,10 +53,68 @@ class Dimension(models.Model):
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
 
-class UserDimension(models.Models):
+class UserGenre(models.Models):
 	user = models.ForeignKey(User)
-	dimension = models.ForeignKey(Dimension)
+	genre = models.ForeignKey(Genre)
 	preference = models.DecimalField(max_digits=20, decimal_places=3)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class UserCategory(models.Models):
+	user = models.ForeignKey(User)
+	category = models.ForeignKey(Category)
+	preference = models.DecimalField(max_digits=20, decimal_places=3)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class UserKeyword(models.Models):
+	user = models.ForeignKey(User)
+	keyword = models.ForeignKey(Keyword)
+	preference = models.DecimalField(max_digits=20, decimal_places=3)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class Country(models.Model):
+	name = models.CharField(max_length=20)
+	continent = models.CharField(max_length=20, choices=CONTINENT_CHOICES)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class City(model.Model):
+	name = models.CharField(max_length=20)
+	continent = models.CharField(max_length=20, choices=CONTINENT_CHOICES)
+	country = models.ForeignKey(Country)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class OfficeHours(models.Model):
+	MON = 'Monday'
+	TUE = 'Tuesday'
+	WED = 'Wednesday'
+	THU = 'Thursday'
+	FRI = 'Friday'
+	SAT = 'Saturday'
+	SUN = 'Sunday'
+
+	DAY_OF_WEEK_CHOICES = (
+		MON, u''),
+		TUE, u''),
+		WED, u''),
+		THU, u''),
+		FRI, u''),
+		SAT, u''),
+		SUN, u''),
+	)
+
+	resort = models.ForeignKey(Resort)
+	day_of_week = models.CharField(max_length=80, choices=DAY_OF_WEEK_CHOICES)
+	office_hours_start = models.DateTimeField(null=True, blank=True)
+	office_hours_end = models.DateTimeField(null=True, blank=True)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
@@ -73,23 +155,7 @@ class Destination(models.Model):
 	country = models.ForeignKey(Country)
 	city = models.ForeignKey(City)
 	address = models.CharField(max_length=200, blank=True)
-	price = models.SmallIntegerField(null=True, blank=True)
 	currency_unit = models.CharField(max_length=10, choices=UNIT_CHOICES)
-	create_time = models.DateTimeField(auto_now_add=True)
-	last_update_time = models.DateTimeField(auto_now=True)
-	remark = models.TextField(blank=True)
-
-class Country(models.Model):
-	name = models.CharField(max_length=20)
-	continent = models.CharField(max_length=20, choices=CONTINENT_CHOICES)
-	create_time = models.DateTimeField(auto_now_add=True)
-	last_update_time = models.DateTimeField(auto_now=True)
-	remark = models.TextField(blank=True)
-
-class City(model.Model):
-	name = models.CharField(max_length=20)
-	continent = models.CharField(max_length=20, choices=CONTINENT_CHOICES)
-	country = models.ForeignKey(Country)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
@@ -100,35 +166,8 @@ class Hotel(Destination):
 
 	grade = models.CharField(max_length=20, choices=GRADE_CHOICES)
 	room_grade = models.CharField(max_length=20, choices=ROOM_GRADE_CHOICES)
-	original_price = models.SmallIntegerField(null=True, blank=True)
-	discount_price = models.SmallIntegerField(null=True, blank=True)
-	create_time = models.DateTimeField(auto_now_add=True)
-	last_update_time = models.DateTimeField(auto_now=True)
-	remark = models.TextField(blank=True)
-
-class OfficeHours(models.Model):
-	MON = 'Monday'
-	TUE = 'Tuesday'
-	WED = 'Wednesday'
-	THU = 'Thursday'
-	FRI = 'Friday'
-	SAT = 'Saturday'
-	SUN = 'Sunday'
-
-	DAY_OF_WEEK_CHOICES = (
-		MON, u''),
-		TUE, u''),
-		WED, u''),
-		THU, u''),
-		FRI, u''),
-		SAT, u''),
-		SUN, u''),
-	)
-
-	resort = models.ForeignKey(Resort)
-	day_of_week = models.CharField(max_length=80, choices=DAY_OF_WEEK_CHOICES)
-	office_hours_start = models.DateTimeField(null=True, blank=True)
-	office_hours_end = models.DateTimeField(null=True, blank=True)
+	original_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+	discount_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
@@ -139,6 +178,8 @@ class Resort(Destination):
 
 	description = models.TextField(null=True)
 	office_hours = models.ForeignKey(OfficeHours, null=True, blank=True)
+	original_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+	discount_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
@@ -149,7 +190,7 @@ class TourProduct(models.Model):
 
 	name = models.CharField(max_length=80)
 	description = models.TextField(blank=True)
-	resort = models.Foreignkey(Resort)
+	resort = models.ForeignKey(Resort)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
@@ -164,6 +205,11 @@ class PackageTour(models.Model):
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
+
+
+
+
+
 
 
 
