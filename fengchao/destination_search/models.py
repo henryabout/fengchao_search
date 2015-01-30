@@ -1,11 +1,38 @@
 from django.db import models
 
+class User(models.Model):
+	name = models.CharField(max_length=20)
+	username = models.CharField(max_length=20, blank=True)
+	password = models.CharField(max_length=80)
+	phone_num = models.CharField(max_length=20, blank=True)
+	email_address =models.CharField(max_length=80, blank=True)
+	register_time = models.DateTimeField(auto_now_add=True)
+	last_login_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class Category(models.Model):
+	class Meta:
+		db_table = 'dimension'
+
+	name = models.CharField(max_length=80)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
 class Dimension(models.Model):
 	class Meta:
 		db_table = 'dimension'
 
 	keyword = models.CharField(max_length=80)
-	weight = models.DecimalField(max_digits=20, decimal_places=10)
+	weight = models.DecimalField(max_digits=20, decimal_places=3)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class UserDimension(models.Models):
+	user = models.ForeignKey(User)
+	dimension = models.ForeignKey(Dimension)
+	preference = models.DecimalField(max_digits=20, decimal_places=3)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
@@ -14,7 +41,7 @@ class Destination(models.Model):
 	HOTEL = 'hotel'
 	RESORT = 'resort'
 
-	DESTINATION_CHOICES = (
+	TYPE_CHOICES = (
 		(HOTEL, u'宾馆'),
 		(RESORT, u'旅游景区'),
 	)
@@ -41,7 +68,7 @@ class Destination(models.Model):
 		(JPY, u'日元'),
 	)
 
-	category = models.CharField(max_length=80, choices=DESTINATION_CHOICES)
+	general_type = models.CharField(max_length=80, choices=TYPE_CHOICES)
 	continent = models.CharField(max_length=20, choices=CONTINENT_CHOICES)
 	country = models.ForeignKey(Country)
 	city = models.ForeignKey(City)
@@ -54,6 +81,15 @@ class Destination(models.Model):
 
 class Country(models.Model):
 	name = models.CharField(max_length=20)
+	continent = models.CharField(max_length=20, choices=CONTINENT_CHOICES)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
+class City(model.Model):
+	name = models.CharField(max_length=20)
+	continent = models.CharField(max_length=20, choices=CONTINENT_CHOICES)
+	country = models.ForeignKey(Country)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
