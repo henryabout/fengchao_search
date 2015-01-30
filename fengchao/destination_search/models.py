@@ -60,7 +60,10 @@ class Hotel(Destination):
 	room_grade = models.CharField(max_length=20, choices=ROOM_GRADE_CHOICES)
 	original_price = models.SmallIntegerField(null=True, blank=True)
 	discount_price = models.SmallIntegerField(null=True, blank=True)
-	
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
 class OfficeHours(models.Model):
 	MON = 'Monday'
 	TUE = 'Tuesday'
@@ -84,6 +87,9 @@ class OfficeHours(models.Model):
 	day_of_week = models.CharField(max_length=80, choices=DAY_OF_WEEK_CHOICES)
 	office_hours_start = models.DateTimeField(null=True, blank=True)
 	office_hours_end = models.DateTimeField(null=True, blank=True)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
 
 class Resort(Destination):
 	class Meta:
@@ -91,18 +97,31 @@ class Resort(Destination):
 
 	description = models.TextField(null=True)
 	office_hours = models.ForeignKey(OfficeHours, null=True, blank=True)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
 
 class TourProduct(models.Model):
 	class Meta:
 		db_table = 'tour_product'
 
-
-
+	name = models.CharField(max_length=80)
+	description = models.TextField(blank=True)
+	resort = models.Foreignkey(Resort)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
 
 
 class PackageTour(models.Model):
+	class Meta:
+		db_table = 'package_tour'
 
-
+	name = models.CharField(max_length=80)
+	description = models.TextField(blank=True)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
 
 
 
