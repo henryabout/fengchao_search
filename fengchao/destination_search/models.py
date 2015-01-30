@@ -18,13 +18,13 @@ class Genre(models.Model):
 		db_table = 'genre'
 
 	DIMENSION_CHOICES = (
-		(NATURE, u''),
-		(CULTURE, u''),
-		(HISTORY, u''),
-		(TIME, u''),
-		(PLACE, u''),
-		(FIGURE, u''),
-		(PRICE, u''),
+		(NATURE, u'自然风光'),
+		(CULTURE, u'人文建筑'),
+		(HISTORY, u'历史古迹'),
+		(TIME, u'时间'),
+		(PLACE, u'地理位置'),
+		(FIGURE, u'人物'),
+		(PRICE, u'价格'),
 	)
 
 	name = models.CharField(max_length=80)
@@ -150,12 +150,16 @@ class Destination(models.Model):
 		(JPY, u'日元'),
 	)
 
+	name = models.CharField(max_length=80)
+	description = models.TextField(null=True, blank=True)
 	general_type = models.CharField(max_length=80, choices=TYPE_CHOICES)
 	continent = models.CharField(max_length=20, choices=CONTINENT_CHOICES)
 	country = models.ForeignKey(Country)
 	city = models.ForeignKey(City)
 	address = models.CharField(max_length=200, blank=True)
 	currency_unit = models.CharField(max_length=10, choices=UNIT_CHOICES)
+	hit_count = models.IntegerField(null=True, blank=True)
+	comment_count = models.IntegerField(null=True, blank=True)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
@@ -163,6 +167,20 @@ class Destination(models.Model):
 class Hotel(Destination):
 	class Meta:
 		db_table = 'hotel'
+
+	GRADE_CHOICES = None
+	
+	SINGLE = 'single room'
+	DOUBLE = 'double room'
+	STANDARD = 'standard room'
+	SUIT = 'suit room'
+	
+	ROOM_GRADE_CHOICES = (
+		(SINGLE, u'单人间'),
+		(DOUBLE, u'双人间'),
+		(STANDARD, u'标准间'),
+		(SUIT, u'套间'),
+	)
 
 	grade = models.CharField(max_length=20, choices=GRADE_CHOICES)
 	room_grade = models.CharField(max_length=20, choices=ROOM_GRADE_CHOICES)
@@ -176,7 +194,6 @@ class Resort(Destination):
 	class Meta:
 		db_table = 'resort'
 
-	description = models.TextField(null=True)
 	office_hours = models.ForeignKey(OfficeHours, null=True, blank=True)
 	original_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
 	discount_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
@@ -188,35 +205,82 @@ class TourProduct(models.Model):
 	class Meta:
 		db_table = 'tour_product'
 
+	CATEGORY_CHOICES =
+
 	name = models.CharField(max_length=80)
 	description = models.TextField(blank=True)
 	resort = models.ForeignKey(Resort)
+	category = models.CharField(max_length=80, choices=CATEGORY_CHOICES)
+	expiration = models.SmallIntegerField(null=True, blank=True)
+	vendor = models.ForeignKey(Vendor)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
-
 
 class PackageTour(models.Model):
 	class Meta:
 		db_table = 'package_tour'
 
+	LANG_CHOICES = (
+		(CHINESE, u'汉语'),
+		(ENGLISH, u'英语'),
+		(JAPANESE, u'日语'),
+		(SPANISH, u'西班牙语'),
+	)
+
+	FREQUENCY_CHOICES = (
+		(DAILY, u'每天'),
+		(WEEKLY, u'每周'),
+		(MONTHLY, u'每月'),
+	)
+
 	name = models.CharField(max_length=80)
 	description = models.TextField(blank=True)
+	start_place = models.ForeignKey(City)
+	end_place = models.ForeignKey(City)
+	num_of_days = models.SmallIntegerField()
+	service_lang = models.CharField(max_length=20, choices=LANG_CHOICES)
+	service_start_date = models.DateTimeField()
+	service_end_date = models.DateTimeField()
+	service_day_of_week = models.charField(max_length=20, choices=OfficeHours.DAY_OF_WEEK_CHOICES)
+	service_frequency = models.charField(max_length=20, choices=FREQUENCY_CHOICES)
 	create_time = models.DateTimeField(auto_now_add=True)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
 
 
+class ResortPackageTour(models.Model):
+	class Meta:
+		db_table = 'resort_package_tour'
 
+	resort = models.ForeignKey(Resort)
+	package_tour = models.ForeignKey(PackageTour)
+	order = models.IntegerField()
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
 
+class ResortUserComment(models.Model):
+	class Meta:
+		db_table = 'resort_user_comment'
 
+	content = models.CharField(max_length=2000)
+	user = models.ForeignKey(User)
+	resort = models.ForeignKey(resort)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
 
+class HotelUserComment(models.Model):
+	class Meta:
+		db_table = 'hotel_user_comment'
 
-
-
-
-
-
+	content = models.CharField(max_length=2000)
+	user = models.ForeignKey(User)
+	hotel = models.ForeignKey(Hotel)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
 
 
 
