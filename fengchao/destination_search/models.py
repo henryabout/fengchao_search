@@ -52,6 +52,12 @@ class Destination(models.Model):
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
 
+class Country(models.Model):
+	name = models.CharField(max_length=20)
+	create_time = models.DateTimeField(auto_now_add=True)
+	last_update_time = models.DateTimeField(auto_now=True)
+	remark = models.TextField(blank=True)
+
 class Hotel(Destination):
 	class Meta:
 		db_table = 'hotel'
