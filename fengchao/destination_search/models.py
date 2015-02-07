@@ -30,6 +30,7 @@ class Genre(models.Model):
 	name = models.CharField(max_length=80)
 	dimension = models.CharField(max_length=80, choices=DIMENSION_CHOICES)
 	create_time = models.DateTimeField(auto_now_add=True)
+	weight = models.DecimalField(max_digits=20, decimal_places=3)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
 
@@ -40,6 +41,7 @@ class Category(models.Model):
 	name = models.CharField(max_length=80)
 	genre = models.CharField(max_length=80)
 	create_time = models.DateTimeField(auto_now_add=True)
+	weight = models.DecimalField(max_digits=20, decimal_places=3)
 	last_update_time = models.DateTimeField(auto_now=True)
 	remark = models.TextField(blank=True)
 
